@@ -1,4 +1,4 @@
-name: TESTES
+name: CD
 on:
   push:
     branches:
