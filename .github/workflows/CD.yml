@@ -55,7 +55,7 @@ jobs:
          mvn -B verify sonar:sonar \
          -Dsonar.host.url=https://sonarcloud.io \
          -Dsonar.organization=guilherme2041 \ 
-         -Dsonar.projectKey=Guilherme2041_java-api\
+         -Dsonar.projectKey=Guilherme2041_java-api \
          -Dsonar.language=java \
          -Dsonar.java.coveragePlugin=jacoco \
          -Dmaven.test.skip=true
