@@ -1,0 +1,82 @@
+name: TESTES
+on:
+  push:
+    branches:
+     - release
+    
+jobs:
+  CI:
+   runs-on: ubuntu-latest
+      
+   steps:
+     
+     
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js 16.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16.x
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run the tests
+        run: npm run test -- --coverage
+        env:
+          CI: true
+  
+     # - name: SonarCloud Scan
+     #   uses: SonarSource/sonarcloud-github-action@master
+     #   env:
+     #       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+    
+
+  CD:
+   runs-on: ubuntu-latest
+   environment: TESTES
+   needs: CI
+   
+   steps:
+      - name: Configure SSH Google Cloud
+        run: |
+          mkdir -p ~/.ssh/
+          echo "$SSH_KEY" > ~/.ssh/google-cloud.key
+          chmod 600 ~/.ssh/google-cloud.key
+          cat >>~/.ssh/config <<END
+          Host google-cloud
+            HostName $SSH_HOST
+            User $SSH_USER
+            IdentityFile ~/.ssh/google-cloud.key
+            StrictHostKeyChecking no
+          END
+        env:
+          SSH_USER: ${{ secrets.DES_SSH_USER }}
+          SSH_KEY: ${{ secrets.DES_SSH_KEY }}
+          SSH_HOST: ${{ secrets.DES_SSH_HOST }}     
+    
+     
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js 16.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16.x
+
+      - name: Install dependencies
+        run: npm install
+
+     
+      - name: Build the application
+        run: npm run build
+
+      - name: Deploy the application
+        run: |
+          ssh google-cloud sudo systemctl stop TESTES-react
+          ssh google-cloud sudo rm -rf /app/TESTES-react
+          scp -r build google-cloud:/home/TESTES-CI-CD/TESTES-react
+          ssh google-cloud sudo mv /home/TESTES-CI-CD/TESTES-react /app/TESTES-react
+          ssh google-cloud sudo systemctl start TESTES-react  
