@@ -28,7 +28,7 @@ jobs:
           cache: maven
       
       - name: Executando testes
-        run: mvn -B -f pom.xml clean install -Dmaven.test.skip=true
+        run: mvn -B -f pom.xml test jacoco:prepare-agent jacoco:report
         
       - name: SonarCloud Analyze
         env:
