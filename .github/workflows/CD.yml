@@ -60,7 +60,7 @@ jobs:
       - name: Etapa de Deploy
         run: |
           ssh azure 'sudo systemctl stop java-app'
-          ssh azure 'sudo rm -rf /app/java-app'
-          scp target/java-api.jar azure:~/java-app/java-api.jar
-          ssh azure 'sudo mv ~/java-app/java-api.jar /app/java-app/java-api.jar'
+          ssh azure 'sudo rm -rf /app/java-api.jar'
+          scp target/java-api.jar azure:~/java-api.jar
+          ssh azure 'sudo mv ~/java-api.jar /app/java-api.jar'
           ssh azure 'sudo systemctl start java-app'
