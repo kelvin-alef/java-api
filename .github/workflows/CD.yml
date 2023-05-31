@@ -52,13 +52,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
-         mvn -B verify sonar:sonar \
-         -Dsonar.host.url=https://sonarcloud.io \
-         -Dsonar.organization=guilherme2041 \ 
-         -Dsonar.projectKey=Guilherme2041_java-api \
-         -Dsonar.language=java \
-         -Dsonar.java.coveragePlugin=jacoco \
-         -Dmaven.test.skip=true
+         mvn -B verify sonar:sonar -Dsonar.host.url=https://sonarcloud.io -Dsonar.organization=guilherme2041 -Dsonar.projectKey=Guilherme2041_java-api -Dsonar.language=java -Dsonar.java.coveragePlugin=jacoco -Dmaven.test.skip=true
          
       - name: Etapa de build
         run: mvn -B -f pom.xml clean install -Dmaven.test.skip=true
