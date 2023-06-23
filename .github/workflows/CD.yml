@@ -26,21 +26,21 @@ jobs:
     - name: Configure SSH Azure
       run: |
         mkdir -p ~/.ssh/
-        echo "$SSH_KEY" > ~/.ssh/azure.key
-        chmod 600 ~/.ssh/azure.key
+        echo "$SSH_KEY" > ~/.ssh/remote.key
+        chmod 600 ~/.ssh/remote.key
         cat >>~/.ssh/config <<END
-        Host azure
+        Host remote
           HostName $SSH_HOST
           User $SSH_USER
           IdentityFile ~/.ssh/azure.key
           StrictHostKeyChecking no
         END
       env:
-        SSH_USER: ${{ secrets.SSH_USER_PROD }}
-        SSH_HOST: ${{ secrets.SSH_HOST_PROD }}
-        SSH_KEY: ${{ secrets.SSH_KEY_PROD }}
+        SSH_USER: ${{ secrets.SSH_USER }}
+        SSH_HOST: ${{ secrets.SSH_HOST }}
+        SSH_KEY: ${{ secrets.SSH_KEY }}
     
     - name: Deploy The Application
       run: |
-        ssh azure 'sudo rm -rf /api/java-api.jar'
-        scp target/java-api.jar azure:/api/java-api.jar
+        ssh remote 'sudo rm -rf /api/java-api.jar'
+        scp target/java-api.jar remote:/api/java-api.jar
