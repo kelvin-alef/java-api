@@ -23,24 +23,11 @@ jobs:
     - name: Build The Application
       run: mvn -B -f pom.xml clean install -Dmaven.test.skip=true
     
-    - name: Configure SSH
-      run: |
-        mkdir -p ~/.ssh/
-        echo "$SSH_KEY" > ~/.ssh/remote.key
-        chmod 600 ~/.ssh/remote.key
-        cat >>~/.ssh/config <<END
-        Host remote
-          HostName $SSH_HOST
-          User $SSH_USER
-          IdentityFile ~/.ssh/remote.key
-          StrictHostKeyChecking no
-        END
+    - name: Deploy Docker
       env:
-        SSH_HOST: ${{ secrets.SSH_HOST }}
-        SSH_USER: ${{ secrets.SSH_USER }}
-        SSH_KEY: ${{ secrets.SSH_KEY }}
-    
-    - name: Deploy The Application
+        DOCKER_USER: ${{ secrets.DOCKER_USER }}
+        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
       run: |
-        ssh remote 'sudo rm -rf /api/java-api.jar'
-        scp target/java-api.jar remote:/api/java-api.jar
+        docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
+        docker build . -t kevinalef/java-api
+        docker push kevinalef/java-api
